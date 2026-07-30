@@ -1,0 +1,436 @@
+"""
+lifebridge/backend/app/seed/seed_data.py
+Pre-seeded Indian datasets for cases, institutions, documents, activities, and audit trail matching Phase 3 frontend.
+"""
+
+CASES_DB = [
+    {
+        "id": "c-101",
+        "deceasedName": "Rameshchandra Mehta",
+        "dateOfBirth": "1948-03-14",
+        "dateOfDeath": "2026-05-12",
+        "ssnMasked": "PAN: ABCXX4912M",
+        "panMasked": "ABCXX4912M",
+        "aadhaarMasked": "XXXX-XXXX-8492",
+        "jurisdiction": "High Court of Judicature at Bombay (Testamentary Division)",
+        "executorName": "Eleanor Mehta Vance",
+        "executorRole": "Executor",
+        "status": "negotiation",
+        "progressPercent": 78,
+        "totalAssets": 14850000.0,
+        "totalLiabilities": 620000.0,
+        "netEstateValue": 14230000.0,
+        "institutionsCount": 28,
+        "resolvedInstitutionsCount": 22,
+        "openActionCount": 3,
+        "createdAt": "2026-05-15",
+        "updatedAt": "2026-07-30",
+        "primaryAttorney": "Shardul Amarchand & Partners",
+        "probateCourt": "Bombay High Court (Testamentary Div)",
+        "caseNumber": "MH-2026-004921"
+    },
+    {
+        "id": "c-102",
+        "deceasedName": "Savitri Devi Sharma",
+        "dateOfBirth": "1955-11-02",
+        "dateOfDeath": "2026-06-01",
+        "ssnMasked": "PAN: BKYXX3104K",
+        "panMasked": "BKYXX3104K",
+        "aadhaarMasked": "XXXX-XXXX-3104",
+        "jurisdiction": "District & Sessions Court, South Delhi (Probate Bench)",
+        "executorName": "Dimitri Sharma",
+        "executorRole": "Administrator",
+        "status": "verification",
+        "progressPercent": 42,
+        "totalAssets": 8900000.0,
+        "totalLiabilities": 1150000.0,
+        "netEstateValue": 7750000.0,
+        "institutionsCount": 16,
+        "resolvedInstitutionsCount": 7,
+        "openActionCount": 5,
+        "createdAt": "2026-06-04",
+        "updatedAt": "2026-07-28",
+        "primaryAttorney": "Delhi High Court Fiduciary Counsel",
+        "probateCourt": "Delhi District Probate Bench",
+        "caseNumber": "DL-2026-081290"
+    },
+    {
+        "id": "c-103",
+        "deceasedName": "Vikramaditya Rao",
+        "dateOfBirth": "1939-08-22",
+        "dateOfDeath": "2026-06-20",
+        "ssnMasked": "PAN: CQRXX9011P",
+        "panMasked": "CQRXX9011P",
+        "aadhaarMasked": "XXXX-XXXX-9011",
+        "jurisdiction": "City Civil Court, Bengaluru (Family Bench)",
+        "executorName": "Beatrice Rao",
+        "executorRole": "Legal Rep",
+        "status": "discovery",
+        "progressPercent": 25,
+        "totalAssets": 34000000.0,
+        "totalLiabilities": 2100000.0,
+        "netEstateValue": 31900000.0,
+        "institutionsCount": 34,
+        "resolvedInstitutionsCount": 8,
+        "openActionCount": 8,
+        "createdAt": "2026-06-22",
+        "updatedAt": "2026-07-29",
+        "primaryAttorney": "Karnataka Estate Partners",
+        "probateCourt": "Bengaluru City Civil Court",
+        "caseNumber": "KA-2026-001844"
+    },
+    {
+        "id": "c-104",
+        "deceasedName": "Sunita Deshmukh-Miller",
+        "dateOfBirth": "1962-01-30",
+        "dateOfDeath": "2026-04-10",
+        "ssnMasked": "PAN: DFXXX5521R",
+        "panMasked": "DFXXX5521R",
+        "aadhaarMasked": "XXXX-XXXX-5521",
+        "jurisdiction": "High Court of Judicature at Calcutta (Testamentary Division)",
+        "executorName": "David Deshmukh",
+        "executorRole": "Executor",
+        "status": "settled",
+        "progressPercent": 96,
+        "totalAssets": 6200000.0,
+        "totalLiabilities": 80000.0,
+        "netEstateValue": 6120000.0,
+        "institutionsCount": 14,
+        "resolvedInstitutionsCount": 14,
+        "openActionCount": 0,
+        "createdAt": "2026-04-12",
+        "updatedAt": "2026-07-25",
+        "primaryAttorney": "Eastern Probate Law Chambers",
+        "probateCourt": "Calcutta High Court (Testamentary Div)",
+        "caseNumber": "WB-2026-003310"
+    }
+]
+
+INSTITUTIONS_DB = [
+    {
+        "id": "org-301",
+        "name": "State Bank of India (SBI)",
+        "sector": "Banking",
+        "accountNumberMasked": "SB-****4912",
+        "estimatedValue": 2450000.0,
+        "accountType": "Premier Savings & Term Deposit",
+        "status": "in_negotiation",
+        "contactPerson": "Fiduciary & Claims Desk (Mumbai Main)",
+        "lastContactDate": "2026-07-30 08:45",
+        "feeWaiverAmount": 45000.0,
+        "sopRequirements": ["Certified Death Certificate", "Legal Heir Certificate", "Form ISR-1 (KYC Update)", "NOC from Legal Heirs"],
+        "claimId": "CLM-SBI-9921"
+    },
+    {
+        "id": "org-302",
+        "name": "Life Insurance Corp of India (LIC)",
+        "sector": "Insurance",
+        "accountNumberMasked": "POL-LIC-883910",
+        "estimatedValue": 5000000.0,
+        "accountType": "Jeevan Anand Whole Life Policy",
+        "status": "settled",
+        "contactPerson": "Claims Dept (Zonal Office)",
+        "lastContactDate": "2026-07-28 14:20",
+        "feeWaiverAmount": 0.0,
+        "sopRequirements": ["Original Policy Document", "Certified Death Certificate", "Claimant Bank KYC"],
+        "claimId": "CLM-LIC-1029"
+    },
+    {
+        "id": "org-303",
+        "name": "EPFO (Employees Provident Fund)",
+        "sector": "Pension",
+        "accountNumberMasked": "UAN-1009****4912",
+        "estimatedValue": 6200000.0,
+        "accountType": "EPF Corpus & Pension Scheme (EPS-95)",
+        "status": "settled",
+        "contactPerson": "Regional PF Commissioner",
+        "lastContactDate": "2026-07-27 11:15",
+        "feeWaiverAmount": 12000.0,
+        "sopRequirements": ["Form 10D / Form 20", "Legal Heir Certificate", "Bank Account Verification"],
+        "claimId": "CLM-EPF-8812"
+    },
+    {
+        "id": "org-304",
+        "name": "National Pension System (NPS Trust)",
+        "sector": "Pension",
+        "accountNumberMasked": "PRAN-****8492",
+        "estimatedValue": 2550000.0,
+        "accountType": "NPS Tier-I Retirement Corpus",
+        "status": "settled",
+        "contactPerson": "Nodal Office NSDL-CRA",
+        "lastContactDate": "2026-07-20 09:30",
+        "feeWaiverAmount": 0.0,
+        "sopRequirements": ["Withdrawal Form Annexure I", "Certified Death Certificate", "Aadhaar & PAN"],
+        "claimId": "NPS-DEL-901"
+    },
+    {
+        "id": "org-305",
+        "name": "Tata Power / Adani Electricity",
+        "sector": "Utilities",
+        "accountNumberMasked": "CA-****7712",
+        "estimatedValue": -34000.0,
+        "accountType": "Residential Connection & Meter Transfer",
+        "status": "in_negotiation",
+        "contactPerson": "Customer Service Estates",
+        "lastContactDate": "2026-07-29 16:10",
+        "feeWaiverAmount": 4000.0,
+        "sopRequirements": ["Name Transfer Request", "Death Certificate Copy", "No Dues NOC"],
+        "claimId": "UTL-TP-331"
+    },
+    {
+        "id": "org-306",
+        "name": "Income Tax Department (ITD)",
+        "sector": "Government",
+        "accountNumberMasked": "PAN-ABCXX4912M",
+        "estimatedValue": -125000.0,
+        "accountType": "Final Form 16 / ITR-1 Legal Representative Filing",
+        "status": "notified",
+        "contactPerson": "Assessing Officer (Jurisdictional AO)",
+        "lastContactDate": "2026-07-25 10:00",
+        "feeWaiverAmount": 0.0,
+        "sopRequirements": ["Register as Legal Heir on e-Filing Portal", "Indemnity Bond"],
+        "claimId": "ITD-IN-2026"
+    }
+]
+
+DOCUMENTS_DB = [
+    {
+        "id": "doc-201",
+        "caseId": "c-101",
+        "fileName": "Certified_Death_Certificate_MCGM_Rameshchandra_Mehta.pdf",
+        "fileType": "PDF",
+        "category": "Identity",
+        "uploadedAt": "2026-05-16 10:14",
+        "authenticityScore": 99.4,
+        "tamperStatus": "PASSED",
+        "issuingAuthority": "Municipal Corporation of Greater Mumbai (MCGM)",
+        "extractedEntitiesCount": 14,
+        "summary": "Official certified death certificate with MCGM QR code digital signature validation.",
+        "fileUrl": "http://localhost:8000/storage/doc-201.pdf"
+    },
+    {
+        "id": "doc-202",
+        "caseId": "c-101",
+        "fileName": "Legal_Heir_Certificate_Bombay_High_Court.pdf",
+        "fileType": "PDF",
+        "category": "Legal",
+        "uploadedAt": "2026-05-20 14:02",
+        "authenticityScore": 98.8,
+        "tamperStatus": "PASSED",
+        "issuingAuthority": "High Court of Judicature at Bombay (Testamentary Div)",
+        "extractedEntitiesCount": 9,
+        "summary": "Grants full legal heir powers to Eleanor Mehta Vance with seal of Probate Judge.",
+        "fileUrl": "http://localhost:8000/storage/doc-202.pdf"
+    },
+    {
+        "id": "doc-203",
+        "caseId": "c-101",
+        "fileName": "Registered_Will_and_Testament_2022.pdf",
+        "fileType": "PDF",
+        "category": "Legal",
+        "uploadedAt": "2026-05-16 11:30",
+        "authenticityScore": 97.5,
+        "tamperStatus": "PASSED",
+        "issuingAuthority": "Sub-Registrar Office (SRO Mumbai)",
+        "extractedEntitiesCount": 22,
+        "summary": "Specifies 60/40 estate split between daughter Eleanor and son Thomas.",
+        "fileUrl": "http://localhost:8000/storage/doc-203.pdf"
+    },
+    {
+        "id": "doc-204",
+        "caseId": "c-101",
+        "fileName": "SBI_Passbook_Statement_FY_2025-26.pdf",
+        "fileType": "PDF",
+        "category": "Financial",
+        "uploadedAt": "2026-05-22 09:15",
+        "authenticityScore": 96.1,
+        "tamperStatus": "PASSED",
+        "issuingAuthority": "State Bank of India (SBI Main Branch)",
+        "extractedEntitiesCount": 18,
+        "summary": "Parsed ₹24,50,000 savings balance and recurring utility payment mandates.",
+        "fileUrl": "http://localhost:8000/storage/doc-204.pdf"
+    }
+]
+
+ACTIVITIES_DB = [
+    {
+        "id": "act-1",
+        "agentId": "ag-03",
+        "agentName": "Verification Agent 03",
+        "agentRole": "Verification",
+        "action": "Verifying Legal Heir Certificate seal authenticity & Tehsildar digital stamp integrity",
+        "institutionName": "Bombay High Court",
+        "caseId": "c-101",
+        "timestamp": "Just now",
+        "status": "running",
+        "confidenceScore": 0.99,
+        "explanation": "Cryptographic SHA-256 digital signature verification matches Maharashtra Revenue e-District database."
+    },
+    {
+        "id": "act-2",
+        "agentId": "ag-01",
+        "agentName": "Discovery Agent 01",
+        "agentRole": "Discovery",
+        "action": "Discovered unlisted EPFO Provident Fund account (₹18,42,000) via Form 26AS tax parsing",
+        "institutionName": "EPFO (Employees Provident Fund)",
+        "caseId": "c-101",
+        "timestamp": "2 mins ago",
+        "status": "completed",
+        "confidenceScore": 0.97,
+        "explanation": "Form 26AS tax credit parsing identified UAN #1009-8812-4912 with EPFO Regional Office Mumbai."
+    },
+    {
+        "id": "act-3",
+        "agentId": "ag-04",
+        "agentName": "Negotiation Agent 04",
+        "agentRole": "Negotiation",
+        "action": "Negotiating fee waiver on frozen savings account dormant maintenance penalties",
+        "institutionName": "State Bank of India (SBI)",
+        "caseId": "c-101",
+        "timestamp": "5 mins ago",
+        "status": "action_needed",
+        "confidenceScore": 0.94,
+        "explanation": "SBI agreed to waive ₹45,000 in account dormant penalty charges under RBI Master Directions pending executor digital authorization."
+    },
+    {
+        "id": "act-4",
+        "agentId": "ag-02",
+        "agentName": "Compliance Agent 02",
+        "agentRole": "Compliance",
+        "action": "Evaluating statutory creditor public notice period under Hindu Succession Act (60 days)",
+        "institutionName": "Maharashtra Gazette Registry",
+        "caseId": "c-101",
+        "timestamp": "12 mins ago",
+        "status": "completed",
+        "confidenceScore": 1.0,
+        "explanation": "State mandated 60-day notice window in Gazette completed with zero unresolved creditor claims."
+    },
+    {
+        "id": "act-5",
+        "agentId": "ag-05",
+        "agentName": "Simulation Agent 05",
+        "agentRole": "Simulation",
+        "action": "Running capital gains tax stepped-up basis optimization model for ancestral property sale",
+        "caseId": "c-101",
+        "timestamp": "18 mins ago",
+        "status": "completed",
+        "confidenceScore": 0.96,
+        "explanation": "Indexed Cost of Acquisition calculation under IT Act Sec 48 projects zero capital gains tax liability for legal heirs."
+    }
+]
+
+DAG_NODES_DB = [
+    {
+        "id": "dag-1",
+        "caseId": "c-101",
+        "title": "Obtain Certified Death Certificate from MCGM Municipal Corp",
+        "description": "Upload certified copy from Municipal Registrar of Births & Deaths",
+        "assignedAgent": "Verification Agent 03",
+        "status": "completed",
+        "dependencies": [],
+        "estimatedDays": 2,
+        "category": "Verification"
+    },
+    {
+        "id": "dag-2",
+        "caseId": "c-101",
+        "title": "File Petition for Legal Heir Certificate / Probate of Will",
+        "description": "High Court appointment of Legal Heir Representative Eleanor Vance",
+        "assignedAgent": "Compliance Agent 02",
+        "status": "completed",
+        "dependencies": ["dag-1"],
+        "estimatedDays": 14,
+        "category": "Legal"
+    },
+    {
+        "id": "dag-3",
+        "caseId": "c-101",
+        "title": "Autonomous Multi-Institutional Account Discovery via Form 26AS & AIS",
+        "description": "Scan banking feeds, Form 26AS tax records & correspondence for hidden accounts",
+        "assignedAgent": "Discovery Agent 01",
+        "status": "completed",
+        "dependencies": ["dag-2"],
+        "estimatedDays": 5,
+        "category": "Financial"
+    },
+    {
+        "id": "dag-4",
+        "caseId": "c-101",
+        "title": "Dispatch Account Freeze & Claim Packets to Banks (SBI, LIC, EPFO)",
+        "description": "Send Legal Heir Cert + Form ISR-1 + Death Cert to SBI, LIC, EPFO",
+        "assignedAgent": "Negotiation Agent 04",
+        "status": "in_progress",
+        "dependencies": ["dag-3"],
+        "estimatedDays": 7,
+        "category": "Financial"
+    },
+    {
+        "id": "dag-5",
+        "caseId": "c-101",
+        "title": "Negotiate Maintenance Fee Waivers under RBI Master Directions",
+        "description": "Secure waiver of ₹45,000 in SBI bank penalty fees under RBI guidelines",
+        "assignedAgent": "Negotiation Agent 04",
+        "status": "action_required",
+        "dependencies": ["dag-4"],
+        "estimatedDays": 3,
+        "category": "Financial"
+    },
+    {
+        "id": "dag-6",
+        "caseId": "c-101",
+        "title": "File Final ITR Return as Legal Representative with ITD",
+        "description": "Submit tax clearance & calculate stepped-up indexed basis under IT Act Sec 48",
+        "assignedAgent": "Simulation Agent 05",
+        "status": "pending",
+        "dependencies": ["dag-4"],
+        "estimatedDays": 10,
+        "category": "Tax"
+    },
+    {
+        "id": "dag-7",
+        "caseId": "c-101",
+        "title": "Final Legal Heir Disbursement & High Court Accounting",
+        "description": "Distribute net ₹1,42,30,000 pool to heirs & produce legal audit pack",
+        "assignedAgent": "Orchestrator Agent 01",
+        "status": "pending",
+        "dependencies": ["dag-5", "dag-6"],
+        "estimatedDays": 5,
+        "category": "Disbursement"
+    }
+]
+
+AUDIT_LOGS_DB = [
+    {
+        "id": "aud-901",
+        "caseId": "c-101",
+        "timestamp": "2026-07-30 09:20:11 IST",
+        "actor": "Negotiation Agent 04",
+        "actorType": "AI Agent",
+        "actionGroup": "CLAIM_DISPATCH",
+        "description": "Dispatched automated legal notice and fee waiver request under RBI Master Directions to State Bank of India.",
+        "hashSHA256": "a4f91b92c81d09e82341b590e2d192fa80192e10a8819208310",
+        "reasoning": "Verified Legal Heir Certificate attached with validity timestamp < 60 days."
+    },
+    {
+        "id": "aud-902",
+        "caseId": "c-101",
+        "timestamp": "2026-07-30 08:45:30 IST",
+        "actor": "Verification Agent 03",
+        "actorType": "AI Agent",
+        "actionGroup": "DOCUMENT_PARSE",
+        "description": "Passed cryptographic QR seal validation on Certified Death Certificate from MCGM.",
+        "hashSHA256": "7c91e8812f0190a12e8412891f0923091e921098231920912",
+        "reasoning": "Document tamper score: 0.00% anomaly detected across MCGM digital signature scan."
+    },
+    {
+        "id": "aud-903",
+        "caseId": "c-101",
+        "timestamp": "2026-07-29 16:14:02 IST",
+        "actor": "Eleanor Mehta Vance",
+        "actorType": "Human User",
+        "actionGroup": "APPROVAL_GRANTED",
+        "description": "Approved distribution allocation plan: 60% Eleanor Vance, 40% Thomas Mehta under Hindu Succession Act.",
+        "hashSHA256": "b2190823190812901290310293019203912093102931092",
+        "reasoning": "Matches testamentary directions in Registered Will document doc-203."
+    }
+]
