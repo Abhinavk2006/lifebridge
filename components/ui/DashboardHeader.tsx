@@ -9,7 +9,7 @@ import { Search, AlertTriangle, Download, Building2, FileText, UserCheck, CheckC
 
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useLanguage } from '@/components/providers/LanguageProvider';
-import { downloadCourtPackagePDF } from '@/utils/exportPackage';
+import { downloadCourtPackagePDF, downloadSection65BCertificate } from '@/utils/exportPackage';
 import { formatINR } from '@/utils/formatters';
 
 export const DashboardHeader: React.FC = () => {
@@ -28,7 +28,7 @@ export const DashboardHeader: React.FC = () => {
   };
 
   const handleExportPackage = () => {
-    toast('Exporting Court Package', 'Generating tamper-proof SHA-256 PDF audit pack...', 'info');
+    toast('Exporting Court Package', 'Generating tamper-proof SHA-256 PDF audit pack & Sec 63 BSA affidavit...', 'info');
     setTimeout(() => {
       downloadCourtPackagePDF({
         caseNumber: currentCase.caseNumber,
@@ -37,7 +37,14 @@ export const DashboardHeader: React.FC = () => {
         jurisdiction: currentCase.jurisdiction,
         netEstateValue: formatINR(currentCase.netEstateValue)
       });
-      toast('Court Package Exported', `Downloaded Court_Package_${currentCase.caseNumber}_Audit.pdf with verified SHA-256 seal.`, 'success');
+      downloadSection65BCertificate({
+        caseNumber: currentCase.caseNumber,
+        deceasedName: currentCase.deceasedName,
+        executorName: currentCase.executorName,
+        jurisdiction: currentCase.jurisdiction,
+        netEstateValue: formatINR(currentCase.netEstateValue)
+      });
+      toast('Court Package & BSA Affidavit Exported', `Downloaded Court_Package PDF and Section 63 BSA Evidence Affidavit.`, 'success');
     }, 1200);
   };
 
@@ -49,7 +56,7 @@ export const DashboardHeader: React.FC = () => {
   const hasResults = searchQuery.trim().length > 0 && (matchingCases.length > 0 || matchingDocs.length > 0 || matchingInsts.length > 0);
 
   return (
-    <header className="w-full bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-3 flex items-center justify-between shadow-xs">
+    <header className="w-full bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-3 flex items-center justify-between shadow-xs print:hidden">
       {/* Search & Case Meta */}
       <div className="flex items-center gap-6">
         <div className="relative w-80">
@@ -148,6 +155,15 @@ export const DashboardHeader: React.FC = () => {
 
       {/* Right Controls, Language Switcher & Role Switcher */}
       <div className="flex items-center gap-3">
+        {/* Security Login Link */}
+        <Link
+          href="/login"
+          className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-[11px] rounded-lg transition flex items-center gap-1.5 shadow-xs"
+        >
+          <UserCheck className="w-3.5 h-3.5 text-[#B8935B]" />
+          <span>CAPTCHA Login</span>
+        </Link>
+        
         {/* Language Switcher */}
         <LanguageSwitcher />
 
@@ -184,13 +200,13 @@ export const DashboardHeader: React.FC = () => {
         )}
 
         {/* Certified Export Button */}
-        <button
-          onClick={handleExportPackage}
-          className="hidden sm:flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm transition-colors cursor-pointer"
+        <Link
+          href="/dashboard/export-certificate"
+          className="hidden sm:flex items-center gap-1.5 bg-[#004c8c] hover:bg-[#002b49] text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm transition-colors cursor-pointer"
         >
-          <Download className="w-3.5 h-3.5 text-blue-400" />
-          <span>{t('common.export')}</span>
-        </button>
+          <Download className="w-3.5 h-3.5 text-[#B8935B]" />
+          <span>Export Court Package</span>
+        </Link>
       </div>
     </header>
   );

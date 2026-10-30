@@ -19,7 +19,10 @@ export const AgentTicker: React.FC = () => {
     let fallbackInterval: NodeJS.Timeout | null = null;
 
     try {
-      ws = new WebSocket('ws://localhost:8000/ws/agent-ticker');
+      const defaultApi = process.env.NEXT_PUBLIC_API_URL;
+      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 
+        (defaultApi ? defaultApi.replace(/^http/, 'ws') + '/ws/agent-ticker' : 'ws://localhost:8000/ws/agent-ticker');
+      ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
         setWsConnected(true);
@@ -115,7 +118,7 @@ export const AgentTicker: React.FC = () => {
   const displayItems = [...items, ...items];
 
   return (
-    <div className="w-full bg-[#090D16] text-slate-100 border-b border-slate-800 text-xs py-2.5 overflow-hidden select-none relative shadow-inner">
+    <div className="w-full bg-[#090D16] text-slate-100 border-b border-slate-800 text-xs py-2.5 overflow-hidden select-none relative shadow-inner print:hidden">
       <div className="max-w-[1280px] mx-auto px-4 flex items-center gap-3">
         {/* Left Fixed Badge */}
         <div className="shrink-0 flex items-center gap-1.5 bg-blue-950/80 text-blue-300 border border-blue-800/60 px-2.5 py-1 rounded-full font-medium tracking-wide">

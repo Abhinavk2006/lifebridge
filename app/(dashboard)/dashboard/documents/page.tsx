@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useLifeBridgeStore } from '@/lib/store';
 import { DocumentItem } from '@/lib/types';
@@ -73,7 +74,7 @@ export default function DocumentVaultPage() {
         issuingAuthority: category === 'Tax' ? 'Income Tax Department (e-Filing Portal)' : 'Sub-Registrar Office (SRO Mumbai)',
         extractedEntitiesCount: 16,
         summary: `Parsed ${fileName}. Verified digital seal & extracted 16 linked Indian financial entity nodes.`,
-        fileUrl: `http://localhost:8000/storage/${newDocId}.pdf`
+        fileUrl: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/storage/${newDocId}.pdf`
       };
 
       useLifeBridgeStore.setState((state) => ({
@@ -105,19 +106,65 @@ export default function DocumentVaultPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
-        <div>
-          <h1 className="font-serif text-2xl font-bold text-slate-900">{t('documents.title')}</h1>
-          <p className="text-xs text-slate-500 mt-1">{t('documents.subtitle')}</p>
+    <div className="space-y-8 max-w-7xl mx-auto font-sans">
+      {/* High-Impact Indian Banking Hero Banner */}
+      <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-700 min-h-[240px] flex items-center bg-slate-900">
+        <div className="absolute inset-0 z-0 opacity-40">
+          <Image
+            src="/indian_bank_vault.png"
+            alt="Forensic Document Vault"
+            fill
+            priority
+            className="object-cover object-center"
+            unoptimized
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#002b49] via-[#002b49]/90 to-transparent" />
         </div>
-        <button 
-          onClick={() => setIsUploadOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-sm transition-colors flex items-center gap-2 cursor-pointer"
-        >
-          <Upload className="w-4 h-4" /> {t('documents.upload_btn')}
-        </button>
+
+        <div className="relative z-10 p-8 w-full flex flex-col md:flex-row md:items-center justify-between gap-6 text-white">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-[#B8935B]/20 text-[#B8935B] border border-[#B8935B]/40 px-3.5 py-1.5 rounded-full text-xs font-semibold">
+              <Sparkles className="w-4 h-4 text-[#B8935B]" />
+              <span>FORENSIC DOCUMENT VERIFICATION VAULT</span>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="relative w-14 h-14 shrink-0 bg-white/10 p-1.5 rounded-2xl border border-white/20">
+                <Image
+                  src="/ashoka_legal_seal.png"
+                  alt="High Court Seal"
+                  width={56}
+                  height={56}
+                  className="object-contain"
+                />
+              </div>
+              <div>
+                <h1 className="font-serif text-3xl font-bold tracking-tight text-white">
+                  {t('documents.title')}
+                </h1>
+                <p className="text-xs text-blue-200 font-mono mt-0.5">
+                  {t('documents.subtitle')}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <button 
+              onClick={() => setIsUploadOpen(true)}
+              className="px-5 py-2.5 bg-[#B8935B] text-[#002b49] font-bold text-xs font-mono rounded-xl hover:bg-white transition flex items-center gap-2 shadow-sm uppercase tracking-wider shrink-0 cursor-pointer"
+            >
+              <Upload className="w-4 h-4" /> <span>{t('documents.upload_btn')}</span>
+            </button>
+            <Link
+              href="/dashboard/export-certificate"
+              className="px-5 py-2.5 bg-[#B8935B] text-[#002b49] font-bold text-xs font-mono rounded-xl hover:bg-white transition flex items-center gap-2 shadow-sm uppercase tracking-wider"
+            >
+              <FileUp className="w-4 h-4" />
+              <span>EXPORT STATEMENT (PDF)</span>
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Filters & Search */}

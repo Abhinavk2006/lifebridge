@@ -118,7 +118,7 @@ export interface AuditRecord {
   timestamp: string;
   actor: string;
   actorType: 'AI Agent' | 'Human User' | 'System';
-  actionGroup: 'DOCUMENT_PARSE' | 'AGENT_DECISION' | 'CLAIM_DISPATCH' | 'APPROVAL_GRANTED' | 'FEE_WAIVER';
+  actionGroup: 'DOCUMENT_PARSE' | 'AGENT_DECISION' | 'CLAIM_DISPATCH' | 'APPROVAL_GRANTED' | 'FEE_WAIVER' | 'IDENTITY_DEACTIVATION' | 'DATA_PURGE';
   description: string;
   hashSHA256: string;
   reasoning?: string;
@@ -134,3 +134,17 @@ export interface SimulationResult {
   riskRating: 'LOW' | 'MEDIUM' | 'HIGH';
   savingsVersusTraditional: number;
 }
+
+export interface CredentialDeactivationItem {
+  id: string;
+  credentialType: 'Aadhaar Card' | 'PAN Card' | 'Driving License' | 'Voter ID (EPIC)' | 'Passport';
+  identifier: string;
+  authority: string;
+  status: 'PENDING_SURRENDER' | 'IN_PROGRESS' | 'COMPLETED';
+  initiatedDate: string | null;
+  completedDate: string | null;
+  formRequired: string;
+  auditHash: string;
+  notes: string;
+}
+

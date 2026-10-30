@@ -1,16 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useLifeBridgeStore } from '@/lib/store';
 import { useToast } from '@/components/ui/Toast';
 import { formatINR } from '@/utils/formatters';
-import { Building2, Bot, CheckCircle2, FileText, Send, ShieldCheck, ArrowLeft, DollarSign, Clock } from 'lucide-react';
+import { Building2, Bot, CheckCircle2, FileText, Send, ShieldCheck, ArrowLeft, Download, X, Eye, Printer, Award, Sparkles } from 'lucide-react';
+import { useLanguage } from '@/components/providers/LanguageProvider';
+import { downloadRBIFeeWaiverCertificate } from '@/utils/exportPackage';
 
 export default function NegotiationRoomPage() {
+  const params = useParams();
+  const instId = params?.id as string;
   const { institutions, updateInstitutionStatus } = useLifeBridgeStore();
   const { toast } = useToast();
-  const inst = institutions[0] || {
+  const { t } = useLanguage();
+  const inst = institutions.find(i => i.id === instId) || institutions[0] || {
     id: 'org-301',
     name: 'State Bank of India (SBI)',
     sector: 'Banking',
@@ -60,124 +67,262 @@ export default function NegotiationRoomPage() {
     }
   ]);
 
-  const [settled, setSettled] = useState(false);
+  const [inputMsg, setInputMsg] = useState('');
+  const [selectedDoc, setSelectedDoc] = useState<{ title: string; docType: string } | null>(null);
 
-  const handleSettle = () => {
-    updateInstitutionStatus(inst.id, 'settled', 45000);
-    setSettled(true);
-    toast('Claim Settled!', `Approved ₹45,000 fee waiver with State Bank of India. Claim marked as Settled.`, 'success');
+  const handleSendMessage = () => {
+    if (!inputMsg.trim()) return;
+
+    const newMsg = {
+      id: `m-${Date.now()}`,
+      sender: 'User',
+      senderName: 'Eleanor Vance (Lead Executor)',
+      timestamp: 'Just now',
+      content: inputMsg,
+      attachedDoc: 'Executor_Authorization_Affidavit.pdf'
+    };
+
+    setMessages([...messages, newMsg]);
+    setInputMsg('');
+    toast('Message Dispatched', 'Your instructions have been sent to Negotiation Agent 04 & SBI Fiduciary Ops.', 'success');
+  };
+
+  const handleExportWaiverCert = () => {
+    downloadRBIFeeWaiverCertificate({
+      claimId: inst.claimId,
+      institutionName: inst.name,
+      waivedAmount: '₹45,000'
+    });
+    toast('RBI Fee Waiver Certificate Exported!', `Downloaded RBI_Statutory_Fee_Waiver_Release_${inst.claimId}.txt with official RBI circular citation.`, 'success');
+  };
+
+  const handleOpenDoc = (docName: string) => {
+    setSelectedDoc({
+      title: docName,
+      docType: docName.includes('Certificate') ? 'Legal Heir Certificate' : docName.includes('Ledger') ? 'Bank Account Statement' : 'RBI Fee Waiver Notice'
+    });
+    toast('Viewing Verified Document', `Opening ${docName} with High Court Ashoka Seal verification...`, 'info');
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-6 max-w-7xl mx-auto font-sans">
+      {/* Top Navigation */}
       <div className="flex items-center justify-between border-b border-slate-200 pb-4">
         <div className="flex items-center gap-3">
-          <Link href="/dashboard/organizations" className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
+          <Link
+            href="/dashboard/organizations"
+            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition text-slate-700"
+          >
+            <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-blue-600">
-              <Building2 className="w-4 h-4" /> Autonomous Institution Negotiation Room
+            <div className="flex items-center gap-2 text-xs font-mono font-semibold text-[#004c8c]">
+              <Building2 className="w-4 h-4 text-[#B8935B]" />
+              <span>{t('org.room_tag')}</span>
             </div>
             <h1 className="font-serif text-2xl font-bold text-slate-900">{inst.name}</h1>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="bg-amber-100 text-amber-800 text-xs font-bold font-mono-val px-3 py-1.5 rounded-lg border border-amber-200">
-            {settled ? 'STATUS: SETTLED' : 'STATUS: WAIVER PENDING'}
+          <span className="bg-amber-100 text-amber-800 text-xs font-mono font-bold px-3 py-1.5 rounded-lg border border-amber-200">
+            {t('org.waiver_pending')} (+₹45,000)
           </span>
+          <button
+            onClick={handleExportWaiverCert}
+            className="px-4 py-2 bg-[#004c8c] text-white text-xs font-semibold rounded-xl hover:bg-[#002b49] transition flex items-center gap-2 cursor-pointer shadow-xs"
+          >
+            <Printer className="w-4 h-4 text-[#B8935B]" />
+            <span>{t('org.export_certificate')}</span>
+          </button>
         </div>
       </div>
 
-      {/* Main Grid: Live Dialogue Transcript & Bank Meta */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: Negotiation Dialogue Transcript */}
-        <div className="lg:col-span-2 card-enterprise p-6 space-y-6">
-          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
-            <h3 className="font-serif text-lg font-bold text-slate-900">Live Agent Negotiation Transcript</h3>
-            <span className="text-xs text-slate-400 font-mono-val">Claim ID: {inst.claimId}</span>
-          </div>
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column: Live Agent Negotiation Transcript */}
+        <div className="lg:col-span-8 space-y-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h2 className="font-serif font-bold text-lg text-slate-900">{t('org.negotiation_transcript')}</h2>
+              <span className="text-xs font-mono text-slate-500">Claim ID: {inst.claimId}</span>
+            </div>
 
-          <div className="space-y-4">
-            {messages.map((msg) => (
-              <div 
-                key={msg.id}
-                className={`p-4 rounded-xl border text-xs space-y-2 ${
-                  msg.sender === 'Agent' 
-                    ? 'bg-blue-50/70 border-blue-200 text-slate-900 ml-4' 
-                    : 'bg-slate-50 border-slate-200 text-slate-800 mr-4'
-                }`}
-              >
-                <div className="flex items-center justify-between font-semibold border-b border-slate-200/60 pb-1.5">
-                  <span className="flex items-center gap-1.5 text-slate-900 font-bold">
-                    {msg.sender === 'Agent' ? <Bot className="w-4 h-4 text-blue-600" /> : <Building2 className="w-4 h-4 text-slate-600" />}
-                    {msg.senderName}
-                  </span>
-                  <span className="text-slate-400 text-[10px] font-mono-val">{msg.timestamp}</span>
-                </div>
-
-                <p className="leading-relaxed text-slate-700">{msg.content}</p>
-
-                {msg.attachedDoc && (
-                  <div className="inline-flex items-center gap-1.5 bg-white border border-slate-200 px-2.5 py-1 rounded text-[11px] font-mono-val text-blue-700 font-semibold mt-1">
-                    <FileText className="w-3.5 h-3.5" /> Attached: {msg.attachedDoc}
+            <div className="space-y-4">
+              {messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`p-4 rounded-2xl space-y-2 border text-xs font-sans transition ${
+                    m.sender === 'Agent'
+                      ? 'bg-blue-50/70 border-blue-200 text-slate-900'
+                      : m.sender === 'Institution'
+                      ? 'bg-slate-50 border-slate-200 text-slate-900'
+                      : 'bg-emerald-50 border-emerald-200 text-slate-900'
+                  }`}
+                >
+                  <div className="flex items-center justify-between font-mono text-[11px]">
+                    <div className="flex items-center gap-2 font-bold text-[#004c8c]">
+                      <Bot className="w-3.5 h-3.5 text-[#B8935B]" />
+                      <span>{m.senderName}</span>
+                    </div>
+                    <span className="text-slate-500">{m.timestamp}</span>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
 
-          {/* Action Callout inside Negotiation Room */}
-          {!settled && (
-            <div className="bg-gradient-to-r from-blue-900 to-slate-900 text-white rounded-xl p-4 flex items-center justify-between">
-              <div>
-                <p className="font-bold text-sm text-blue-200">Executor Sign-Off Required to Settle</p>
-                <p className="text-xs text-slate-300">Authorize State Bank of India ₹45,000 penalty fee waiver and close claim.</p>
-              </div>
+                  <p className="leading-relaxed text-slate-800">{m.content}</p>
+
+                  {m.attachedDoc && (
+                    <div className="pt-2">
+                      <button
+                        onClick={() => handleOpenDoc(m.attachedDoc)}
+                        className="inline-flex items-center gap-2 bg-white border border-blue-300 hover:border-[#004c8c] text-[#004c8c] font-mono font-semibold px-3 py-1.5 rounded-lg text-[11px] shadow-2xs hover:shadow-xs transition cursor-pointer"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-[#B8935B]" />
+                        <span>Attached: {m.attachedDoc}</span>
+                        <Eye className="w-3.5 h-3.5 text-blue-600 ml-1" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Input Form */}
+            <div className="pt-4 border-t border-slate-100 flex items-center gap-3">
+              <input
+                type="text"
+                value={inputMsg}
+                onChange={(e) => setInputMsg(e.target.value)}
+                placeholder="Type executor instructions or upload counter-claim affidavit..."
+                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#004c8c]"
+              />
               <button
-                onClick={handleSettle}
-                className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-md transition-colors flex items-center gap-1.5 cursor-pointer"
+                onClick={handleSendMessage}
+                className="px-5 py-2.5 bg-[#004c8c] hover:bg-[#002b49] text-white text-xs font-bold rounded-xl transition flex items-center gap-2 uppercase tracking-wider shrink-0"
               >
-                <CheckCircle2 className="w-4 h-4" /> Authorize & Settle Claim
+                <Send className="w-4 h-4 text-[#B8935B]" />
+                <span>Send</span>
               </button>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Right Col: Institution SOP & Meta */}
-        <div className="space-y-6">
-          <div className="card-enterprise p-5 space-y-4">
-            <h3 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">
-              Institution Overview
+        {/* Right Column: Institution Overview & Required SOP Documents */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6">
+            <h3 className="font-serif font-bold text-lg text-slate-900 border-b border-slate-100 pb-3">
+              {t('org.institution_overview')}
             </h3>
 
-            <div className="space-y-3 text-xs">
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                <span className="text-slate-400 text-[10px] block">Account Balance</span>
-                <span className="font-mono-val font-bold text-slate-900 text-lg">{formatINR(inst.estimatedValue)}</span>
+            <div className="space-y-4 font-sans text-xs">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1 font-mono">
+                <span className="text-[11px] text-slate-500 uppercase">{t('org.account_verified_balance')}</span>
+                <p className="text-2xl font-bold text-[#004c8c]">{formatINR(inst.estimatedValue)}</p>
               </div>
 
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                <span className="text-slate-400 text-[10px] block">Fee Waiver Value</span>
-                <span className="font-mono-val font-bold text-emerald-600 text-base">+{formatINR(inst.feeWaiverAmount || 45000)} Waived</span>
+              <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 space-y-1 font-mono">
+                <span className="text-[11px] text-emerald-800 uppercase font-bold">{t('org.fee_waiver_value')}</span>
+                <p className="text-xl font-bold text-emerald-700">+₹45,000 Waived</p>
               </div>
 
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                <span className="text-slate-400 text-[10px] block mb-1">Required SOP Documents</span>
-                <ul className="space-y-1 text-slate-700">
-                  {inst.sopRequirements.map((sop, idx) => (
-                    <li key={idx} className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> {sop}
-                    </li>
+              {/* Required SOP Documents List */}
+              <div className="space-y-3 pt-2">
+                <h4 className="font-semibold text-slate-900">{t('org.required_sop_docs')}</h4>
+                <div className="space-y-2">
+                  {inst.sopRequirements.map((req, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleOpenDoc(`${req.replace(/\s+/g, '_')}.pdf`)}
+                      className="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 transition flex items-center justify-between gap-2 cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span className="font-medium text-slate-800 text-xs group-hover:text-[#004c8c]">{req}</span>
+                      </div>
+                      <Eye className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#004c8c]" />
+                    </button>
                   ))}
-                </ul>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Interactive Forensic Document Inspection Viewer Modal */}
+      {selectedDoc && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-900 rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden text-slate-900 font-serif">
+            {/* Document Header */}
+            <div className="bg-[#002b49] text-white px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/10 p-1 border border-white/20">
+                  <Image src="/ashoka_legal_seal.png" alt="High Court Seal" width={36} height={36} />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-base text-white">{selectedDoc.title}</h3>
+                  <p className="text-xs text-blue-200 font-mono">FORENSIC SEAL AUTHENTICATED &bull; HIGH COURT BENCH BOMBAY</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedDoc(null)}
+                className="text-slate-300 hover:text-white transition p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Document Preview Body */}
+            <div className="p-8 space-y-6 bg-slate-50 max-h-[70vh] overflow-y-auto font-sans text-xs">
+              <div className="bg-white border border-slate-300 p-6 rounded-xl shadow-xs space-y-4 font-serif">
+                <div className="flex items-start justify-between border-b border-slate-200 pb-4">
+                  <div className="flex items-center gap-3">
+                    <Image src="/ashoka_legal_seal.png" alt="Ashoka Seal" width={56} height={56} />
+                    <div>
+                      <h4 className="font-bold text-base text-slate-900">HIGH COURT OF JUDICATURE AT BOMBAY</h4>
+                      <p className="text-xs font-mono text-slate-600">TESTAMENTARY DIVISION &bull; VERIFIED EXHIBIT</p>
+                    </div>
+                  </div>
+                  <span className="bg-emerald-100 text-emerald-800 font-mono font-bold text-xs px-3 py-1 rounded-full">
+                    AUTHENTICITY: 98.9%
+                  </span>
+                </div>
+
+                <div className="space-y-3 text-xs leading-relaxed text-slate-800 font-sans">
+                  <p>
+                    <strong>EXHIBIT SUMMARY:</strong> Verified copy of <strong className="text-slate-900">{selectedDoc.title}</strong> pertaining to the Estate of Late Rameshchandra Mehta (Case REF: MH-2026-004921).
+                  </p>
+                  <div className="bg-slate-100 p-3 rounded-lg font-mono text-[11px] text-slate-700">
+                    CRYPTOGRAPHIC HASH: 8f9b4c2e1a3d5e7f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d
+                  </div>
+                  <p className="text-slate-600">
+                    Matches Section 8 Hindu Succession Act Class I Legal Heir records and State Bank of India Fiduciary Intake SOP.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Document Footer Controls */}
+            <div className="bg-slate-100 px-6 py-4 border-t border-slate-300 flex items-center justify-between font-sans text-xs">
+              <span className="text-slate-600 font-mono">STATUS: SEAL VERIFIED & ACCEPTED BY BANK</span>
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/dashboard/export-certificate"
+                  className="px-5 py-2.5 bg-[#004c8c] hover:bg-[#002b49] text-white font-bold rounded-xl transition flex items-center gap-2 uppercase tracking-wider"
+                >
+                  <Download className="w-4 h-4 text-[#B8935B]" />
+                  <span>Download PDF Document</span>
+                </Link>
+                <button
+                  onClick={() => setSelectedDoc(null)}
+                  className="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold rounded-xl transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

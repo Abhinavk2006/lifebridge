@@ -5,6 +5,7 @@ import { useLifeBridgeStore } from '@/lib/store';
 import { useToast } from '@/components/ui/Toast';
 import { Lock, Download, ShieldCheck, CheckCircle2, Search, FileText } from 'lucide-react';
 
+import { useLanguage } from '@/components/providers/LanguageProvider';
 import { downloadCourtPackagePDF } from '@/utils/exportPackage';
 import { formatINR } from '@/utils/formatters';
 
@@ -12,6 +13,7 @@ export default function AuditTrailPage() {
   const { auditLogs, cases, activeCaseId } = useLifeBridgeStore();
   const currentCase = cases.find(c => c.id === activeCaseId) || cases[0];
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [isExporting, setIsExporting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -46,23 +48,23 @@ export default function AuditTrailPage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 mb-1">
             <Lock className="w-4 h-4" />
-            <span>Immutable Cryptographic Audit Trail</span>
+            <span>{t('dashboard.sha256_sealed')}</span>
           </div>
-          <h1 className="font-serif text-2xl font-bold text-slate-900">
-            High Court Legal Heir Accounting & Audit Explorer
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+            {t('audit.title')}
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Tamper-proof ledger recording all agent decisions, prompt traces, and financial transactions
+          <p className="text-xs text-gray-500 font-sans mt-0.5">
+            {t('audit.subtitle')}
           </p>
         </div>
 
         <button
           onClick={handleExportCourtPackage}
           disabled={isExporting}
-          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-5 py-2.5 rounded-lg shadow-md transition-colors flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+          className="px-4 py-2.5 bg-[#004c8c] hover:bg-[#002b49] text-white text-xs font-bold font-mono rounded-xl transition flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider disabled:opacity-50 cursor-pointer shrink-0"
         >
-          <Download className="w-4 h-4" />
-          {isExporting ? 'Generating PDF Pack...' : 'Export Certified Court Package (PDF)'}
+          <Download className="w-4 h-4 text-[#B8935B]" />
+          <span>{isExporting ? 'Exporting Package...' : t('audit.export_certified_package')}</span>
         </button>
       </div>
 

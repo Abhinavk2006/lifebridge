@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { EstateCase, AgentActivity, DocumentItem, Institution, AuditRecord, DAGNode } from './types';
+import { EstateCase, AgentActivity, DocumentItem, Institution, AuditRecord, DAGNode, CredentialDeactivationItem } from './types';
 
 interface LifeBridgeState {
   cases: EstateCase[];
@@ -9,6 +9,7 @@ interface LifeBridgeState {
   institutions: Institution[];
   dagNodes: DAGNode[];
   auditLogs: AuditRecord[];
+  deactivations: CredentialDeactivationItem[];
   isWsConnected: boolean;
   
   // Actions
@@ -17,6 +18,9 @@ interface LifeBridgeState {
   updateInstitutionStatus: (id: string, status: Institution['status'], feeWaiver?: number) => void;
   updateDAGNodeStatus: (id: string, status: DAGNode['status']) => void;
   setWsConnected: (connected: boolean) => void;
+  initiateDeactivation: (deactId: string) => void;
+  completeDeactivation: (deactId: string) => void;
+  purgeDeceasedIdentityDetails: (caseId: string) => void;
 }
 
 export const initialCases: EstateCase[] = [
@@ -273,6 +277,48 @@ export const initialInstitutions: Institution[] = [
     feeWaiverAmount: 0,
     sopRequirements: ['Register as Legal Heir on e-Filing Portal', 'Indemnity Bond'],
     claimId: 'ITD-IN-2026'
+  },
+  {
+    id: 'org-307',
+    name: 'HDFC Life Insurance',
+    sector: 'Insurance',
+    accountNumberMasked: 'POL-HDFC-991204',
+    estimatedValue: 2500000,
+    accountType: 'Click 2 Protect Super Term Plan',
+    status: 'in_negotiation',
+    contactPerson: 'Claims Direct Desk (HDFC Life Mumbai)',
+    lastContactDate: '2026-07-30 11:20',
+    feeWaiverAmount: 0,
+    sopRequirements: ['Certified Death Certificate (DigiLocker)', 'Claim Form A (Form 3801)', 'Nominee Cancelled Cheque'],
+    claimId: 'CLM-HDFC-9912'
+  },
+  {
+    id: 'org-308',
+    name: 'ICICI Prudential Life Insurance',
+    sector: 'Insurance',
+    accountNumberMasked: 'POL-ICICI-774102',
+    estimatedValue: 7500000,
+    accountType: 'iProtect Smart Term Care Plan',
+    status: 'in_negotiation',
+    contactPerson: 'Fast-Track Claims Settlement Cell',
+    lastContactDate: '2026-07-29 16:45',
+    feeWaiverAmount: 0,
+    sopRequirements: ['Certified Death Certificate', 'Legal Heir Certificate', 'Nominee Aadhaar & Bank KYC'],
+    claimId: 'CLM-ICICI-7741'
+  },
+  {
+    id: 'org-309',
+    name: 'Max Life Insurance',
+    sector: 'Insurance',
+    accountNumberMasked: 'POL-MAX-441209',
+    estimatedValue: 3000000,
+    accountType: 'Smart Wealth Protection Plan',
+    status: 'in_negotiation',
+    contactPerson: 'Claims Operations Unit',
+    lastContactDate: '2026-07-28 09:10',
+    feeWaiverAmount: 0,
+    sopRequirements: ['Certified Death Certificate', 'High Court Probate Copy', 'Bank Account Verification'],
+    claimId: 'CLM-MAX-4412'
   }
 ];
 
@@ -451,6 +497,68 @@ export const useLifeBridgeStore = create<LifeBridgeState>((set) => ({
       reasoning: 'Matches testamentary directions in Registered Will document doc-203.'
     }
   ],
+  deactivations: [
+    {
+      id: 'deact-aadhaar-101',
+      credentialType: 'Aadhaar Card',
+      identifier: 'XXXX-XXXX-8492',
+      authority: 'UIDAI (Unique Identification Authority of India)',
+      status: 'IN_PROGRESS',
+      initiatedDate: '2026-07-28',
+      completedDate: null,
+      formRequired: 'UIDAI Deactivation Request / Biometric Locking Notification',
+      auditHash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      notes: 'Death certificate submitted to UIDAI regional portal. Awaiting biometric locking confirmation.'
+    },
+    {
+      id: 'deact-pan-101',
+      credentialType: 'PAN Card',
+      identifier: 'ABCXX4912M',
+      authority: 'Income Tax Department (Assessing Officer)',
+      status: 'PENDING_SURRENDER',
+      initiatedDate: null,
+      completedDate: null,
+      formRequired: 'PAN Surrender Application to AO post final tax return',
+      auditHash: '8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4',
+      notes: 'Ready for surrender after filing the deceased\'s final ITR for Assessment Year 2026-27.'
+    },
+    {
+      id: 'deact-dl-101',
+      credentialType: 'Driving License',
+      identifier: 'DL-0420110098765',
+      authority: 'Regional Transport Office (RTO Delhi/State Transport)',
+      status: 'COMPLETED',
+      initiatedDate: '2026-07-20',
+      completedDate: '2026-07-29',
+      formRequired: 'RTO Form for DL & RC Cancellation on Death',
+      auditHash: '11a547796d8e20253d7f02d41b65e96a40d65b16131c778fa023e3e09886d396',
+      notes: 'DL marked as CANCELLED in Parivahan portal records. Acknowledgement receipt issued.'
+    },
+    {
+      id: 'deact-voter-101',
+      credentialType: 'Voter ID (EPIC)',
+      identifier: 'XYZ9876543',
+      authority: 'Election Commission of India (ERO)',
+      status: 'IN_PROGRESS',
+      initiatedDate: '2026-07-25',
+      completedDate: null,
+      formRequired: 'Form 7 (Application for Seeking Deletion of Name in Electoral Roll)',
+      auditHash: '579173d18e87498c471f4502d7fb2e20b33230a3f65df962f913d0a28f41334f',
+      notes: 'Form 7 submitted to Electoral Registration Officer (ERO). Field verification scheduled.'
+    },
+    {
+      id: 'deact-passport-101',
+      credentialType: 'Passport',
+      identifier: 'Z1234567',
+      authority: 'Passport Seva Kendra (Ministry of External Affairs)',
+      status: 'PENDING_SURRENDER',
+      initiatedDate: null,
+      completedDate: null,
+      formRequired: 'Passport Surrender & Impounding Form',
+      auditHash: 'd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35',
+      notes: 'Physical passport book ready for cancellation punch at local PSK.'
+    }
+  ],
   isWsConnected: false,
 
   setActiveCaseId: (id) => set({ activeCaseId: id }),
@@ -463,5 +571,91 @@ export const useLifeBridgeStore = create<LifeBridgeState>((set) => ({
   updateDAGNodeStatus: (id, status) => set((state) => ({
     dagNodes: state.dagNodes.map(node => node.id === id ? { ...node, status } : node)
   })),
-  setWsConnected: (connected) => set({ isWsConnected: connected })
+  setWsConnected: (connected) => set({ isWsConnected: connected }),
+  initiateDeactivation: (deactId) => set((state) => {
+    const today = new Date().toISOString().split('T')[0];
+    const updated = state.deactivations.map(item => {
+      if (item.id === deactId) {
+        return {
+          ...item,
+          status: 'IN_PROGRESS' as const,
+          initiatedDate: today,
+          notes: `Deactivation process initiated by legal heir on ${today}. Formal notification sent to ${item.authority}.`
+        };
+      }
+      return item;
+    });
+    const target = state.deactivations.find(i => i.id === deactId);
+    const newAudit: AuditRecord = {
+      id: `aud-deact-${Date.now()}`,
+      caseId: state.activeCaseId,
+      timestamp: `${today} ${new Date().toLocaleTimeString('en-US', { hour12: false })} IST`,
+      actor: 'Eleanor Mehta Vance',
+      actorType: 'Human User',
+      actionGroup: 'IDENTITY_DEACTIVATION',
+      description: `Initiated official surrender & deactivation of ${target?.credentialType || 'Credential'} (${target?.identifier || ''}) with ${target?.authority || 'Authority'}.`,
+      hashSHA256: `hash-deact-${Math.random().toString(36).substring(2, 12)}`,
+      reasoning: `Submitted required statutory application: ${target?.formRequired || 'Surrender Form'}.`
+    };
+    return { deactivations: updated, auditLogs: [newAudit, ...state.auditLogs] };
+  }),
+  completeDeactivation: (deactId) => set((state) => {
+    const today = new Date().toISOString().split('T')[0];
+    const updated = state.deactivations.map(item => {
+      if (item.id === deactId) {
+        return {
+          ...item,
+          status: 'COMPLETED' as const,
+          completedDate: today,
+          notes: `Credential officially surrendered and CANCELLED by ${item.authority}.`
+        };
+      }
+      return item;
+    });
+    const target = state.deactivations.find(i => i.id === deactId);
+    const newAudit: AuditRecord = {
+      id: `aud-deact-comp-${Date.now()}`,
+      caseId: state.activeCaseId,
+      timestamp: `${today} ${new Date().toLocaleTimeString('en-US', { hour12: false })} IST`,
+      actor: 'Eleanor Mehta Vance',
+      actorType: 'Human User',
+      actionGroup: 'IDENTITY_DEACTIVATION',
+      description: `Completed official surrender & verification of ${target?.credentialType || 'Credential'}. Marked as SURRENDERED in authority system.`,
+      hashSHA256: `hash-comp-${Math.random().toString(36).substring(2, 12)}`,
+      reasoning: `Receipt issued by ${target?.authority || 'Authority'}.`
+    };
+    return { deactivations: updated, auditLogs: [newAudit, ...state.auditLogs] };
+  }),
+  purgeDeceasedIdentityDetails: (caseId) => set((state) => {
+    const timestamp = new Date().toISOString();
+    const updatedCases = state.cases.map(c => {
+      if (c.id === caseId) {
+        return {
+          ...c,
+          panMasked: '[REDACTED-PAN]',
+          aadhaarMasked: '[REDACTED-AADHAAR]',
+          ssnMasked: '[REDACTED-PII]'
+        };
+      }
+      return c;
+    });
+    const updatedDeact = state.deactivations.map(d => ({
+      ...d,
+      identifier: `[REDACTED-${d.credentialType.toUpperCase().replace(/ /g, '_')}-HASH]`,
+      notes: `Raw identity number redacted on ${timestamp.split('T')[0]} per DPDP Act compliance.`
+    }));
+    const newAudit: AuditRecord = {
+      id: `aud-purge-${Date.now()}`,
+      caseId: caseId,
+      timestamp: `${timestamp.split('T')[0]} ${new Date().toLocaleTimeString('en-US', { hour12: false })} IST`,
+      actor: 'Eleanor Mehta Vance (Lead Executor)',
+      actorType: 'Human User',
+      actionGroup: 'DATA_PURGE',
+      description: `Irrevocably redacted & purged sensitive deceased PII credentials (Aadhaar, PAN, DL) from active database records.`,
+      hashSHA256: 'c5f1a9b2d8e34f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a',
+      reasoning: 'Compliance requirement under India Digital Personal Data Protection (DPDP) Act 2023 Section 12.'
+    };
+    return { cases: updatedCases, deactivations: updatedDeact, auditLogs: [newAudit, ...state.auditLogs] };
+  })
 }));
+

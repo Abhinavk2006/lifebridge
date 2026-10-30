@@ -20,7 +20,8 @@ import {
   Lock, 
   FileSpreadsheet,
   ChevronDown,
-  UserCheck
+  UserCheck,
+  UserX
 } from 'lucide-react';
 
 export const DashboardSidebar: React.FC = () => {
@@ -50,6 +51,8 @@ export const DashboardSidebar: React.FC = () => {
       title: t('nav.group_organizations'),
       items: [
         { name: t('nav.institutions_registry'), href: '/dashboard/organizations', icon: Building2, badge: '28' },
+        { name: 'Bank Statements & Loans Audit', href: '/dashboard/organizations/banks', icon: FileSpreadsheet, badge: 'NEW' },
+        { name: 'Insurance Death Claims Gateway', href: '/dashboard/organizations/insurance', icon: Building2, badge: 'IRDAI' },
         { name: t('nav.negotiation_room'), href: '/dashboard/organizations/org-301', icon: Building2 }
       ]
     },
@@ -65,6 +68,7 @@ export const DashboardSidebar: React.FC = () => {
       title: t('nav.group_legal_audit'),
       items: [
         { name: t('nav.legal_audit'), href: '/dashboard/law', icon: Scale },
+        { name: t('nav.identity_deactivation'), href: '/dashboard/deactivation', icon: UserX, badge: '5' },
         { name: t('common.export'), href: '/dashboard/audit', icon: Lock },
         { name: t('nav.settings'), href: '/dashboard/settings', icon: Sliders }
       ]
@@ -72,7 +76,7 @@ export const DashboardSidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col shrink-0 min-h-screen">
+    <aside className="w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col shrink-0 min-h-screen print:hidden">
       {/* Brand Header */}
       <div className="p-4 border-b border-slate-800 flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold shadow-md">
